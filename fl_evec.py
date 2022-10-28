@@ -21,7 +21,7 @@ def build_exp_matrix(listof_times=None,t0_fs=None,t_step=None,n_steps=None,max_f
 
   if listof_times is None:
     listof_times = []
-    for step in range(-10,n_steps):
+    for step in range(-int(n_steps*0.06),n_steps):
       t = t0_fs + t_step * step
       listof_times.append(t)
 
@@ -225,7 +225,7 @@ class FLeigenvectors:
     self.FL_qe = FL_qe
     self.err = err
     
-  def calc_all_times_pVecs(self,t_step=0.0025,n_steps=500):
+  def calc_all_times_pVecs(self,t_step=0.0025,n_steps=469):
     M,alltimes = build_exp_matrix(
                  t0_fs=self.times[0],
                  t_step=t_step,
