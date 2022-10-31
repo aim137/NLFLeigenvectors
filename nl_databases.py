@@ -143,9 +143,9 @@ class NLdblist:
     if tag is None:
       tag = datetime.today().strftime('%Y%m%d-%H.%M.%S')
       if iter_num is not None:
-        tag += '_iteration_'+str(iter_num)
+        tag += '_iter'+str(iter_num)
     
-    fl_eigenvectors = FLeigenvectors(self.period,self.freq,max_fl_mode,self.times)
+    fl_eigenvectors = FLeigenvectors(self.period,self.freq,max_fl_mode,self.times,tag)
 
     self.setup_fl_space(max_fl_mode)
     NL_in = self.calc_pVecs(qe_eV=qe_eV)
