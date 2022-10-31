@@ -2,42 +2,9 @@ from netCDF4 import Dataset
 import numpy as np
 import cmath as c
 from datetime import datetime
-
-HBAR_eVfs = 6.58211899E-1
-HA2EV = 27.2113834
-
-##################################################################################
-### AUX FUNCTIONS ###
-##################################################################################
-
-def build_exp_matrix(listof_times=None,t0_fs=None,t_step=None,n_steps=None,max_fl_mode=None,freq=None,l_inv=True):
-  """builds matrix of exponentials with times
-     and size given by self.times and self.tot_fl_modes
-  """
-  if max_fl_mode is None: 
-    raise ValueError("Missing total number of FL modes on input to build_exp_matrix")
-  if listof_times is None and (t0_fs is None or t_step is None or n_steps is None): 
-    raise ValueError("Missing times on input to build_exp_matrix")
-
-  if listof_times is None:
-    listof_times = []
-    for step in range(-int(n_steps*0.06),n_steps):
-      t = t0_fs + t_step * step
-      listof_times.append(t)
-
-  tot_fl_modes = 2 * max_fl_mode + 1
-  matrix = np.zeros((len(listof_times),tot_fl_modes),dtype=complex)
-  for i,t in enumerate(listof_times):  # rows - time
-   for j in range(tot_fl_modes): # columns - eta
-     eta = j - max_fl_mode
-     matrix[i,j]=c.exp(-1j * eta * (freq/HBAR_eVfs) * t)
-   
-  if l_inv:
-    inverse = np.linalg.inv(matrix[:tot_fl_modes,:])
-    return matrix, inverse
-  else:
-    arrof_time = np.array(listof_times)
-    return matrix, arrof_time
+from aim.floquet.constants import HBAR_eVfs,HA2EV
+from aim.floquet.fl_eigenvecs import FLeigenvectors
+from aim.floquet.aux_functions import build_exp_matrix
 
 ##################################################################################
 ### CLASS NLdblist ###
@@ -120,20 +87,6 @@ class NLdblist:
              max_fl_mode=self.max_fl_mode,
              freq=self.freq)
     return M, Mm1
-
-
-# def build_exp_matrix(self):
-#   """builds matrix of exponentials with times
-#      and size given by self.times and self.tot_fl_modes
-#   """
-#   matrix = np.zeros((len(self.times),self.tot_fl_modes),dtype=complex)
-#   for i,t in enumerate(self.times):  # rows - time
-#    for j in range(self.tot_fl_modes): # columns - eta
-#      eta = self.shift_mode(j)
-#      matrix[i,j]=c.exp(-1j * eta * (self.freq/HBAR_eVfs) * t)
-#    
-#   inverse = np.linalg.inv(matrix[:self.tot_fl_modes,:])
-#   return matrix, inverse
   
   def centr_mode(self,shifted_mode):
     return shifted_mode - (self.max_fl_mode)
@@ -204,41 +157,3 @@ class NLdblist:
     
     return fl_eigenvectors
 
-
-##################################################################################
-### CLASS FLeigenvectors ###
-##################################################################################
-
-class FLeigenvectors:
-
-  def __init__(self,T,f,max_eta,listof_times):
-    self.period = T
-    self.freq = f
-    self.max_fl_mode = max_eta
-    self.tot_fl_modes = 2 * max_eta + 1
-    self.times = np.array(listof_times)
-
-  def store_results(self,NL_in,NL_out,FL_vecs,FL_qe,err):
-    self.NL_in = NL_in
-    self.NL_out = NL_out
-    self.FL_vecs = FL_vecs
-    self.FL_qe = FL_qe
-    self.err = err
-    
-  def calc_all_times_pVecs(self,t_step=0.0025,n_steps=469):
-    M,alltimes = build_exp_matrix(
-                 t0_fs=self.times[0],
-                 t_step=t_step,
-                 n_steps=n_steps,
-                 max_fl_mode=self.max_fl_mode,
-                 freq=self.freq,
-                 l_inv=False)
-
-    NL_out_alltimes = np.matmul(M,self.FL_vecs)
-    return alltimes,NL_out_alltimes
-
-  def plot(self):
-    pass
-
-  def output(self):
-    pass
