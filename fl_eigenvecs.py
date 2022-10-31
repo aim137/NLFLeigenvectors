@@ -1,6 +1,7 @@
 import numpy as np
 import cmath as c
 from datetime import datetime
+from matplotlib import pyplot as plt
 from aim.floquet.constants import HBAR_eVfs,HA2EV
 from aim.floquet.aux_functions import build_exp_matrix
 
@@ -24,7 +25,7 @@ class FLeigenvectors:
     self.FL_qe = FL_qe
     self.err = err
     
-  def calc_all_times_pVecs(self,t_step=0.0025,n_steps=469):
+  def calc_all_times_pVecs(self,t_step=0.0025,n_steps=669):
     M,alltimes = build_exp_matrix(
                  t0_fs=self.times[0],
                  t_step=t_step,
@@ -36,7 +37,20 @@ class FLeigenvectors:
     NL_out_alltimes = np.matmul(M,self.FL_vecs)
     return alltimes,NL_out_alltimes
 
-  def plot(self):
+  def plot_realtime(self,band_to_plot=1):
+    X,Y=self.calc_all_times_pVecs()
+    fig,axes=plt.subplots(2)
+    fig.set_size_inches(8.3,5.8)
+    axes[0].plot(X,Y[:,band_to_plot].real,label='FL_calculated',color='tab:blue')
+    axes[0].plot(self.times,self.NL_in[:,band_to_plot].real ,label='NL_in' ,marker='o',linestyle='',color='tab:olive',ms=12)
+    axes[0].plot(self.times,self.NL_out[:,band_to_plot].real,label='NL_out',marker='.',linestyle='',color='tab:blue',ms=11)
+    axes[1].plot(X,Y[:,band_to_plot].imag,label='FL_calculated',color='tab:blue')
+    axes[1].plot(self.times,self.NL_in[:,band_to_plot].imag ,label='NL_in' ,marker='o',linestyle='',color='tab:olive',ms=12)
+    axes[1].plot(self.times,self.NL_out[:,band_to_plot].imag,label='NL_out',marker='.',linestyle='',color='tab:blue',ms=11)
+    plt.show()
+    
+
+  def plot_floquet(self):
     pass
 
   def output(self):

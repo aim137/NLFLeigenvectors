@@ -157,3 +157,54 @@ class NLdblist:
     
     return fl_eigenvectors
 
+  def find_QE(self,qe_eV,qe_thrs=1e-4,err_thrs=1e-8,max_fl_mode=3,step=0.01,tag=None,max_iter=300):
+    """ Newton-Raphson solver to iterate over executions of run_NL2FL
+        and minimize the error between NL_in and NL_out
+    """
+    if qe_eV   is None: raise ValueError("You need a guess for the qe as input")
+    if qe_thrs is None: raise ValueError("You need a threshold for the qe as input")
+
+    lof_qe  = []
+    lof_err = []
+    
+    # Iteration with guess
+    evecs = self.run_NL2FL(qe_eV,max_fl_mode=max_fl_mode,tag=tag,iter_num=0)
+    lof_qe.append(evecs.FL_qe)
+    lof_err.append(evecs.err)
+    if evecs.err < qe_thrs: return evecs
+    # Iteration with step
+    evecs = self.run_NL2FL(qe_eV+step,max_fl_mode=max_fl_mode,tag=tag,iter_num=1)
+    lof_qe.append(evecs.FL_qe)
+    lof_err.append(evecs.err)
+    _delta_qe = abs(lof_qe[-1]-lof_qe[-2])
+   
+    # Loop
+    iter_num = 1
+    #while (lof_err[-1] > qe_thrs) and (iter_num <= max_iter):
+    #while (_delta_qe > qe_thrs) and (iter_num <= max_iter):
+    while ((_delta_qe > qe_thrs) or (lof_err[-1] > err_thrs)) and (iter_num <= max_iter):
+      iter_num += 1
+      _derivative = (lof_err[-1]-lof_err[-2])/(lof_qe[-1]-lof_qe[-2])
+      _qe = lof_qe[-1] - lof_err[-1]/_derivative
+      evecs = self.run_NL2FL(_qe,max_fl_mode=max_fl_mode,tag=tag,iter_num=iter_num)
+      lof_qe.append(evecs.FL_qe)
+      lof_err.append(evecs.err)
+      _delta_qe = abs(lof_qe[-1]-lof_qe[-2])
+ 
+    evecs.nr_it = iter_num
+    evecs.nr_acc = abs(lof_qe[-1]-lof_qe[-2])
+    
+    return evecs
+
+
+
+
+
+
+
+
+
+
+
+
+
