@@ -20,6 +20,7 @@ class FLeigenvectors:
     self.tot_fl_modes = 2 * max_eta + 1
     self.times = np.array(listof_times)
     self.tag = tag
+    self.dir = 'figs-'+str(self.tag)
 
   def store_results(self,NL_in,NL_out,FL_vecs,FL_qe,err):
     self.NL_in = NL_in
@@ -56,8 +57,9 @@ class FLeigenvectors:
     axes[1].set_xlabel('Time (fs)')
     axes[0].set_ylabel(f'Re[ d_{band_to_plot+1} ]')
     axes[1].set_ylabel(f'Im[ d_{band_to_plot+1} ]')
-    os.system(f'if [ ! -d output{self.tag} ]; then mkdir output{self.tag};fi')
-    plt.savefig(f'output{self.tag}/fig-real_time_projection_over_KS_state_{band_to_plot+1}.pdf')
+    os.system(f'if [ ! -d {self.dir} ]; then mkdir {self.dir};fi')
+    plt.savefig(f'{self.dir}/fig-real_time_projection_over_KS_state_{band_to_plot+1}.pdf')
+    plt.close()
 
   def plot_floquet(self):
     _fl_vec = self.FL_vecs.reshape((1,self.FL_vecs.size),order='F')
@@ -86,12 +88,13 @@ class FLeigenvectors:
     ax.text(13.5,-2.3, f'{abs(self.FL_vecs[self.max_fl_mode+1,1]):.1e}', fontsize=15)
     plt.grid(which='major',lw=1.,color='black')
 
-    os.system(f'if [ ! -d output{self.tag} ]; then mkdir output{self.tag};fi')
-    plt.savefig(f'output{self.tag}/fig-FKS_projection.pdf')
+    os.system(f'if [ ! -d {self.dir} ]; then mkdir {self.dir};fi')
+    plt.savefig(f'{self.dir}/fig-FKS_projection.pdf')
+    plt.close()
 
   def output(self):
-    os.system(f'if [ ! -d output{self.tag} ]; then mkdir output{self.tag};fi')
-    with open(f'output{self.tag}/output{self.tag}.dat','w') as f:
+    os.system(f'if [ ! -d {self.dir} ]; then mkdir {self.dir};fi')
+    with open(f'{self.dir}/output-{self.tag}.dat','w') as f:
       for k,v in self.__dict__.items():
         f.write('--------------------------\n')
         f.write(f'Attribute: {k}\n')

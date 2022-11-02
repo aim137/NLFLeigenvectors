@@ -1,4 +1,5 @@
-from aim.floquet.constants import HBAR_eVfs
+from aim.floquet.constants import HBAR_eVfs,HA2EV
+from netCDF4 import Dataset
 import numpy as np
 import cmath as c
 
@@ -35,3 +36,17 @@ def build_exp_matrix(listof_times=None,t0_fs=None,t_step=None,n_steps=None,max_f
     arrof_time = np.array(listof_times)
     return matrix, arrof_time
 
+def get_bands(kpt=None,band=None):
+  ds=Dataset('SAVE/ns.db1')
+  KSevalues=ds['EIGENVALUES'][:]
+  vb,vb_kpt,vbM=0,0,-111
+  for _band in range(KSevalues.shape[2]):
+    for _kpt in range(KSevalues.shape[1]):
+      for _spin in range(KSevalues.shape[0]):
+        if KSevalues[_spin,_kpt,_band] < 0. and KSevalues[_spin,_kpt,_band] > vbM:
+           vb,vb__kpt,vbM = _band,_kpt,KSevalues[_spin,_kpt,_band]
+
+  if kpt is None and band is None:
+    return (KSevalues - vbM)*HA2EV
+  else:
+    return (KSevalues[0,kpt-1,band-1] - vbM)*HA2EV

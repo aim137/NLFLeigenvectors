@@ -4,7 +4,7 @@ import cmath as c
 from datetime import datetime
 from aim.floquet.constants import HBAR_eVfs,HA2EV
 from aim.floquet.fl_eigenvecs import FLeigenvectors
-from aim.floquet.aux_functions import build_exp_matrix
+from aim.floquet.aux_functions import build_exp_matrix,get_bands
 
 ##################################################################################
 ### CLASS NLdblist ###
@@ -57,6 +57,7 @@ class NLdblist:
     self.tvecs = self.get_tVecs(kpt,band)
     self.times = self.get_times()
     self.freq, self.period = self.get_frequency()
+    self.KSev = get_bands(kpt=kpt,band=band)
 
   def printout_data(self,output_file='test1'):
   
@@ -72,7 +73,7 @@ class NLdblist:
 
 # Processing part
 
-  def setup_fl_space(self,max_fl_mode=3):
+  def setup_fl_space(self,max_fl_mode=4):
     self.max_fl_mode  = max_fl_mode
     self.tot_fl_modes = self.max_fl_mode * 2 + 1
     if not (len(self.tvecs) > self.tot_fl_modes): raise ValueError("You need more time steps than total fl modes")
@@ -135,19 +136,26 @@ class NLdblist:
     return mat_of_recalc_pvecs
  
     
-  def run_NL2FL(self,qe_eV,max_fl_mode=3,tag=None,iter_num=None):
+  def run_NL2FL(self,qe_eV=None,max_fl_mode=None,tag=None,iter_num=None):
     """run
     """
-    if qe_eV is None: raise ValueError("You need the qe as input")
+    if qe_eV is None: qe_eV = self.KSev
+    if max_fl_mode is None: 
+      try:
+       self.max_fl_mode 
+      except AttributeError:
+       self.setup_fl_space()
+    else:
+      self.setup_fl_space(max_fl_mode)
+
 
     if tag is None:
       tag = datetime.today().strftime('%Y%m%d-%H.%M.%S')
       if iter_num is not None:
         tag += '_iter'+str(iter_num)
     
-    fl_eigenvectors = FLeigenvectors(self.period,self.freq,max_fl_mode,self.times,tag)
+    fl_eigenvectors = FLeigenvectors(self.period,self.freq,self.max_fl_mode,self.times,tag)
 
-    self.setup_fl_space(max_fl_mode)
     NL_in = self.calc_pVecs(qe_eV=qe_eV)
     FL_out = self.calc_fVecs(qe_eV,mat_of_pvecs=NL_in)
     NL_out = self.recalc_pVecs_via_fl(mat_of_pvecs=NL_in,mat_of_fvecs=FL_out)
@@ -157,21 +165,31 @@ class NLdblist:
     
     return fl_eigenvectors
 
-  def find_QE(self,qe_eV,qe_thrs=1e-4,err_thrs=1e-8,max_fl_mode=3,step=0.01,tag=None,max_iter=300):
+  def find_QE(self,qe_eV=None,qe_thrs=1e-7,err_thrs=1e-8,max_fl_mode=None,step=0.01,tag=None,max_iter=300):
     """ Newton-Raphson solver to iterate over executions of run_NL2FL
         and minimize the error between NL_in and NL_out
     """
-    if qe_eV   is None: raise ValueError("You need a guess for the qe as input")
+    if qe_eV   is None: qe_eV = self.KSev
     if qe_thrs is None: raise ValueError("You need a threshold for the qe as input")
+    if max_fl_mode is None: 
+      try:
+       self.max_fl_mode 
+      except AttributeError:
+       self.setup_fl_space()
+    else:
+      self.setup_fl_space(max_fl_mode)
 
     lof_qe  = []
     lof_err = []
     
     # Iteration with guess
-    evecs = self.run_NL2FL(qe_eV,max_fl_mode=max_fl_mode,tag=tag,iter_num=0)
+    evecs = self.run_NL2FL(qe_eV,tag=tag,iter_num=0)
     lof_qe.append(evecs.FL_qe)
     lof_err.append(evecs.err)
-    if evecs.err < qe_thrs: return evecs
+    if evecs.err < qe_thrs: 
+      evecs.nr_it = 0
+      evecs.nr_acc = qe_thrs
+      return evecs
     # Iteration with step
     evecs = self.run_NL2FL(qe_eV+step,max_fl_mode=max_fl_mode,tag=tag,iter_num=1)
     lof_qe.append(evecs.FL_qe)
