@@ -22,6 +22,14 @@ class FLeigenvectors:
     self.tag = tag
     self.dir = 'figs-'+str(self.tag)
 
+  @classmethod
+  def FromArrayOnly(cls,array,tag):
+    cls.FL_vecs = array
+    cls.dir = 'figs-'+str(tag)
+    cls.tot_fl_modes = array.shape[0]
+    cls.max_fl_mode = int((cls.tot_fl_modes-1)/2)
+    return cls
+
   def store_results(self,NL_in,NL_out,FL_vecs,FL_qe,err):
     self.NL_in = NL_in
     self.NL_out = NL_out
@@ -61,7 +69,7 @@ class FLeigenvectors:
     plt.savefig(f'{self.dir}/fig-real_time_projection_over_KS_state_{band_to_plot+1}.pdf')
     plt.close()
 
-  def plot_floquet(self):
+  def plot_floquet(self,labels='+1'):
     _fl_vec = self.FL_vecs.reshape((1,self.FL_vecs.size),order='F')
     fig = plt.figure()
     fig.set_size_inches(8.3,3.9)
@@ -82,10 +90,12 @@ class FLeigenvectors:
     ax.set_yticks([])
     ax.set_yticklabels([])
 
-    ax.text(4,-2.3, f'{abs(self.FL_vecs[self.max_fl_mode,0]):.1e}', fontsize=15)
     ax.text(0,-2.3, f'{abs(self.FL_vecs[self.max_fl_mode+1,0]):.1e}', fontsize=15)
+    ax.text(4,-2.3, f'{abs(self.FL_vecs[self.max_fl_mode,0]):.1e}', fontsize=15)
     ax.text(10,-2.3, f'{abs(self.FL_vecs[self.max_fl_mode-1,1]):.1e}', fontsize=15)
     ax.text(13.5,-2.3, f'{abs(self.FL_vecs[self.max_fl_mode+1,1]):.1e}', fontsize=15)
+    if (labels == '+2'):
+      ax.text(16.5,-2.3, f'{abs(self.FL_vecs[self.max_fl_mode+2,1]):.1e}', fontsize=15)
     plt.grid(which='major',lw=1.,color='black')
 
     os.system(f'if [ ! -d {self.dir} ]; then mkdir {self.dir};fi')
@@ -100,3 +110,15 @@ class FLeigenvectors:
         f.write(f'Attribute: {k}\n')
         f.write('Values:\n')
         f.write(str(v)+'\n')
+
+  def output_for_fortran(self,band,kpt,NL_band_1,file='fortran_input.txt'):
+    if kpt == 1:
+      filemode='w'
+    else:
+      filemode='a'
+    with open(f'{file}',filemode) as f:
+      for state in range(self.FL_vecs.shape[1]):
+        for mode in range(self.FL_vecs.shape[0]):
+          _state = state + NL_band_1
+          f.write(f'FL_V_bands({_state},{mode+1},{band},{kpt},1) = {self.FL_vecs[mode,state].real}_SP + cI * {self.FL_vecs[mode,state].imag}_SP\n')
+      f.write(f'FL_QE({band},{kpt},1) = {self.FL_qe/HA2EV}_SP\n')

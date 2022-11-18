@@ -58,6 +58,7 @@ class NLdblist:
     self.times = self.get_times()
     self.freq, self.period = self.get_frequency()
     self.KSev = get_bands(kpt=kpt,band=band)
+    self.kpt = kpt
 
   def printout_data(self,output_file='test1'):
   
