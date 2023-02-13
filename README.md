@@ -15,6 +15,6 @@ Instructions to run tests:
 
 * In order to execute the analysis you will need to
   * retrieve the job_0# directories from Lobster
-  * have the latter and SAVE/ndb1.ns in the directory where you intend to run the python processing
+  * have the latter and SAVE/ns.db1 in the directory where you intend to run the python processing
   * run process_all_kpts.py
 
