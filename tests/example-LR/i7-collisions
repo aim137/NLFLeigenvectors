@@ -1,0 +1,34 @@
+#                                                                     
+#  __  __   ________   ___ __ __    _______   ______                  
+# /_/\/_/\ /_______/\ /__//_//_/\ /_______/\ /_____/\                 
+# \ \ \ \ \\::: _  \ \\::\| \| \ \\::: _  \ \\:::_ \ \                
+#  \:\_\ \ \\::(_)  \ \\:.      \ \\::(_)  \/_\:\ \ \ \               
+#   \::::_\/ \:: __  \ \\:.\-/\  \ \\::  _  \ \\:\ \ \ \              
+#     \::\ \  \:.\ \  \ \\. \  \  \ \\::(_)  \ \\:\_\ \ \             
+#      \__\/   \__\/\__\/ \__\/ \__\/ \_______\/ \_____\/             
+#                                                                     
+#                                                                     
+# Version 5.1.0 Revision 20443 Hash (prev commit) 50993453a           
+#                   Branch is devel-fl                                
+#               MPI+SLK+SLEPC+HDF5_IO Build                           
+#                http://www.yambo-code.org                            
+#
+em1s                             # [R][Xs] Statically Screened Interaction
+collisions                       # [R] Collisions
+dipoles                          # [R] Oscillator strenghts (or dipoles)
+Chimod= "HARTREE"                # [X] IP/Hartree/ALDA/LRC/PF/BSfxc
+% BndsRnXs
+  1 | 20 |                           # [Xs] Polarization function bands
+%
+NGsBlkXs= 2 Ha    # [Xs] Response block size
+% LongDrXs
+ 1.000000 | 1.000000 | 0.000000 |        # [Xs] [cc] Electric Field
+%
+XTermKind= "none"                # [X] X terminator ("none","BG" Bruneval-Gonze)
+% COLLBands
+  4 | 5 |                           # [COLL] Bands for the collisions
+%
+HXC_Potential= "SEX+HARTREE"     # [SC] SC HXC Potential
+HARRLvcs= 2 Ha    # [HA] Hartree     RL components
+EXXRLvcs= 2 Ha    # [XX] Exchange    RL components
+CORRLvcs= 2 Ha    # [GW] Correlation RL components

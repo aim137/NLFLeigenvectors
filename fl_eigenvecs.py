@@ -66,6 +66,7 @@ class FLeigenvectors:
     axes[0].set_ylabel(f'Re[ d_{band_to_plot+1} ]')
     axes[1].set_ylabel(f'Im[ d_{band_to_plot+1} ]')
     os.system(f'if [ ! -d {self.dir} ]; then mkdir {self.dir};fi')
+    plt.legend()
     plt.savefig(f'{self.dir}/fig-real_time_projection_over_KS_state_{band_to_plot+1}.pdf')
     plt.close()
 

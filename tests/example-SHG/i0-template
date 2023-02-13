@@ -1,0 +1,43 @@
+#                                                                     
+#  __  __   ________   ___ __ __    _______   ______                  
+# /_/\/_/\ /_______/\ /__//_//_/\ /_______/\ /_____/\                 
+# \ \ \ \ \\::: _  \ \\::\| \| \ \\::: _  \ \\:::_ \ \                
+#  \:\_\ \ \\::(_)  \ \\:.      \ \\::(_)  \/_\:\ \ \ \               
+#   \::::_\/ \:: __  \ \\:.\-/\  \ \\::  _  \ \\:\ \ \ \              
+#     \::\ \  \:.\ \  \ \\. \  \  \ \\::(_)  \ \\:\_\ \ \             
+#      \__\/   \__\/\__\/ \__\/ \__\/ \_______\/ \_____\/             
+#                                                                     
+#                                                                     
+#       Version 5.0.4 Revision 19593 Hash b030eead9                   
+#                    Branch is master                                 
+#               MPI+SLK+SLEPC+HDF5_IO Build                           
+#                http://www.yambo-code.org                            
+#
+nloptics                         # [R] Non-linear spectroscopy
+% NLBands
+  4 | 5 |                           # [NL] Bands range
+%
+NLverbosity= "low"               # [NL] Verbosity level (low | high)
+NLtime=83.000000           fs    # [NL] Simulation Time
+NLstep= 0.002500           fs    # [NL] Time step length
+NLintegrator= "CRANKNIC"         # [NL] Integrator ("EULEREXP/RK2/RK4/RK2EXP/HEUN/INVINT/CRANKNIC")
+NLCorrelation= "SEX"             # [NL] Correlation ("IPA/HARTREE/TDDFT/LRC/LRW/JGM/SEX")
+NLLrcAlpha= 0.000000             # [NL] Long Range Correction
+% NLEnRange
+ REPLACEFREQ | REPLACEFREQ  |        eV    # [NL] Energy range
+%
+NLEnSteps=  1                    # [NL] Energy steps
+NLDamping= 0.150000        eV    # [NL] Damping (or dephasing)
+#EvalCurrent                   # [NL] Evaluate the current
+HARRLvcs=  2 Ha    # [HA] Hartree     RL components
+EXXRLvcs=  2 Ha    # [XX] Exchange    RL components
+% Field1_Dir
+ 1.000000 | 1.000000 | 0.000000 |        # [NL Field1] Field Versor
+%
+Field1_kind= "SIN"             # [NL Field1] Kind(SIN|SOFTSIN|RES|ANTIRES|GAUSS|DELTA|QSSIN)
+% GfnQP_E
+ 3.300000 | 1.000000 | 1.000000 |        # [EXTQP G] E parameters  (c/v) eV|adim|adim
+%
+% Field1_Freq
+ REPLACEFREQ | REPLACEFREQ  |         eV    # [RT Field1] Frequency
+%

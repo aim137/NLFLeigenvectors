@@ -1,0 +1,27 @@
+#                                                                     
+#                                                                     
+# Y88b    /   e           e    e      888~~\    ,88~-_                
+#  Y88b  /   d8b         d8b  d8b     888   |  d888   \               
+#   Y88b/   /Y88b       d888bdY88b    888 _/  88888    |              
+#    Y8Y   /  Y88b     / Y88Y Y888b   888  \  88888    |              
+#     Y   /____Y88b   /   YY   Y888b  888   |  Y888   /               
+#    /   /      Y88b /          Y888b 888__/    `88_-~                
+#                                                                     
+#                                                                     
+#      Version 5.0.4 Revision 19595 Hash 896bffc02                    
+#                    Branch is master                                 
+#              MPI+SLK+SLEPC+HDF5_IO Build                            
+#               http://www.yambo-code.org                             
+#
+nonlinear                        # [R] Non-linear response analysis
+Xorder= 4                        # Max order of the response/exc functions
+% TimeRange
+-1.000000 |-1.000000 |         fs    # Time-window where processing is done
+# From here onwards, it is ignored in SHG
+%
+ETStpsRt= 500                    # Total Energy steps
+% EnRngeRt
+  0.00000 | 10.00000 |         eV    # Energy range
+%
+DampMode= "NONE"                 # Damping type ( NONE | LORENTZIAN | GAUSSIAN )
+DampFactor= 0.000000       eV    # Damping parameter
